@@ -12,8 +12,7 @@ angular.module('histograph')
     $log.debug('CoreCtrl ready');
     $scope.locationPath = $location.path();
     $scope.locationJson  = JSON.stringify($location.search()); 
-    
-    
+
 
     var suggestionTimeout = 0;
     
@@ -1138,18 +1137,25 @@ angular.module('histograph')
       $scope.isAnnotating = false;
     })
 
+    $scope.lock('auth');
+    UserFactory
+      .get({ method: 'session' }).$promise
+      .then(function(response) {
+        $scope.user = _.get(response, 'result.item', {});
+        $log.info('Auth successful', $scope.user)
+        $scope.unlock('auth');
+      })
+      .catch(function(error) {
+        $log.error('Could not fetch user details because: ' + error.message);
+        $scope.user = { is_authenticated: false };
+        $scope.forceUnlock();
+        $scope.isLoading=false;
+      });
+
     /*
       Load timeline, after some ms
     */
     $timeout(function(){
-      UserFactory
-        .get({ method: 'session' }).$promise
-        .then(function(response) {
-          $scope.user = _.get(response, 'result.item', {});
-        })
-        .catch(function(error) {
-          $log.error('Could not fetch user details because: ' + error.message);
-        })
         /*
           First load only,
           or to be updated whenever a

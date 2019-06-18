@@ -569,14 +569,16 @@ html
         }
       }
 
-
-  body(ng-app='histograph', class=!user.username? 'login-page':'')
+  //- RK: Don't think "login-page" class is ever needed.
+  //-  ng-class="{ 'login-page' : !user.username }"
+  body(ng-app='histograph')
     script(type='text/javascript').
       var socket = io(); 
 
     div(ng-controller='CoreCtrl')
       div(ng-controller='FiltersCtrl')
-        if user.is_authentified
+        //- if user.is_authentified
+        div(ng-show="user.is_authentified")
           header(class='{{queueStatus}}') 
             //- a(id='header-logo', href='#/')
             //-   img(src='images/hg_v.png')
@@ -662,7 +664,8 @@ html
             //- div(id='history')
             //-   div(history='', trails='trails')
             
-        if !user.is_authentified
+        //- if !user.is_authentified
+        div(ng-hide="user.is_authentified || isLoading")
 
             div(id='logo')
               img(src='images/cvce.svg')
@@ -696,7 +699,8 @@ html
 
 
             
-        else
+        //- else
+        div(ng-show="user.is_authentified")
           div.loader.animated(ng-class='isLoading?"fadeIn": "fadeOut"')
             div.sk-double-bounce
               div.sk-child.sk-double-bounce1
